@@ -136,7 +136,7 @@ body{
         <div id="hbadges" class="badges"></div>
         <div id="chart"></div>
         <div class="legend-row">
-          <div class="leg-item"><div class="leg-dot" style="background:#27ae60"></div>Meta (16 CA)</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#27ae60"></div>Meta (500 CA)</div>
           <div class="leg-item"><div class="leg-dot" style="background:#f1c40f"></div>Zona Preventiva</div>
           <div class="leg-item"><div class="leg-dot" style="background:#e74c3c"></div>Zona Reactiva</div>
         </div>
@@ -166,7 +166,7 @@ const db = getFirestore(initializeApp(firebaseConfig));
 const turnoRef = doc(db, "reempaque", "sorting_turno_actual");
 
 /* Configuración editable */
-const META = 16, PREV_MIN = 12;
+const META = 500, PREV_MIN = 350, MAX = 700;
 const HORAS = ['6:00','7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
 const TXT = {
   ok:   ['Meta cumplida:',   'Producción en zona verde. Continuar con el proceso actual.', 'ok'],
@@ -186,10 +186,10 @@ function fit(){
 
 /* Posición vertical (%): las bandas marcan los umbrales reales. 0-12 reactiva, 12-16 preventiva, 16-30 meta */
 function yPct(v){
-  v = Math.max(0, Math.min(30, v));
-  if (v <= 12) return v / 12 * 40;
-  if (v <= 16) return 40 + (v - 12) / 4 * 22;
-  return 62 + (v - 16) / 14 * 38;
+  v = Math.max(0, Math.min(MAX, v));
+  if (v <= PREV_MIN) return v / PREV_MIN * 40;
+  if (v <= META) return 40 + (v - PREV_MIN) / (META - PREV_MIN) * 22;
+  return 62 + (v - META) / (MAX - META) * 38;
 }
 
 function drawBadges(){
@@ -222,7 +222,7 @@ function drawChart(){
     <rect x="${L}" y="${Y(PREV_MIN)}" width="${pw}" height="${T + ph - Y(PREV_MIN)}" fill="url(#gr)"/></g>`;
   s += `<rect x="${L}" y="${T}" width="${pw}" height="${ph}" rx="${24*k}" fill="none" stroke="rgba(16,36,58,.12)" stroke-width="${2*k}"/>`;
   s += `<line x1="${L}" x2="${L + pw}" y1="${Y(META)}" y2="${Y(META)}" stroke="rgba(255,255,255,.9)" stroke-width="${3*k}" stroke-dasharray="${10*k} ${8*k}"/>`;
-  [0, 6, 12, 16, 24, 30].forEach(t => { s += `<text class="tk" x="${L - 12 * k}" y="${Y(t) + 7 * k}" text-anchor="end">${t}</text>`; });
+  [0, 200, PREV_MIN, META, 600, MAX].forEach(t => { s += `<text class="tk" x="${L - 12 * k}" y="${Y(t) + 7 * k}" text-anchor="end">${t}</text>`; });
   HORAS.forEach((h, i) => { s += `<text class="hl" x="${X(i)}" y="${H - 8 * k}" text-anchor="middle">${h}</text>`; });
 
   const pts = [];

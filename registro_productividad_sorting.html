@@ -165,8 +165,8 @@ body{
     </div>
 
     <div class="field-group">
-      <label class="field-lbl" for="cajasInp"><span>Cajas clasificadas</span><span class="hint">Meta: 16 CA/H</span></label>
-      <input class="field-inp" id="cajasInp" type="number" min="0" max="99" placeholder="0" inputmode="numeric">
+      <label class="field-lbl" for="cajasInp"><span>Cajas clasificadas</span><span class="hint">Meta: 500 CA/H</span></label>
+      <input class="field-inp" id="cajasInp" type="number" min="0" max="700" placeholder="0" inputmode="numeric">
     </div>
 
     <div class="zona-indicator zona-vacia" id="zonaPreview">Ingresa las cajas para ver la zona</div>
@@ -197,7 +197,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const turnoRef = doc(db, "reempaque", "sorting_turno_actual");
 
-const META=16,PREV_MIN=12;
+const META=500,PREV_MIN=350;
 const HORAS=['6:00','7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
 let datos={};
 
@@ -246,7 +246,7 @@ function drawMetrics(){
 window.registrar = async function(){
   const v=parseInt(document.getElementById('cajasInp').value);
   const h=document.getElementById('horaInp').value;
-  if(isNaN(v)||v<0||v>99){alert('Ingresa un número válido (0-99).');return;}
+  if(isNaN(v)||v<0||v>700){alert('Ingresa un número válido (0-700).');return;}
   datos[h]=v;
   await setDoc(turnoRef, { horas: datos }, { merge: true });
   document.getElementById('cajasInp').value='';
